@@ -19,7 +19,7 @@ export const columns = [
   }),
   columnHelper.accessor('order_second_time', {
     id: 'order_second_time',
-    header: 'Время второго заказа',
+    header: 'Время изменения заказа',
     cell: info => info.getValue() || '-',
   }),
   columnHelper.accessor('time_between_messages', {
