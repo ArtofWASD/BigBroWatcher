@@ -55,11 +55,6 @@ export const getRowColor = (processingTime: string | null, highlightEnabled: boo
   
   const minutes = parseProcessingTime(processingTime)
   
-  // Добавляем отладочную информацию в консоль
-  if (processingTime) {
-    console.log(`Processing time: "${processingTime}" -> ${minutes} minutes`)
-  }
-  
   if (minutes > 30) {
     return 'bg-red-50 hover:bg-red-100'
   } else if (minutes > 20) {
@@ -90,4 +85,4 @@ export const filterProblemOrders = (orders: Order[], filterEnabled: boolean) => 
     const minutes = parseProcessingTime(processingTime)
     return minutes >= TIME_THRESHOLDS.WARNING
   })
-} 
+}

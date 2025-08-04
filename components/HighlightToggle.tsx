@@ -18,13 +18,11 @@ export function HighlightToggle({
   const handleHighlightToggle = () => {
     const newState = !highlightEnabled
     onHighlightToggle(newState)
-    console.log('Highlight enabled:', newState)
   }
 
   const handleFilterToggle = () => {
     const newState = !filterEnabled
     onFilterToggle(newState)
-    console.log('Filter enabled:', newState)
   }
 
   return (
@@ -78,4 +76,4 @@ export function HighlightToggle({
       )}
     </div>
   )
-} 
+}

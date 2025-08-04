@@ -6,6 +6,8 @@ export type Order = {
   time_between_messages: string | null
   department: string | null
   first_order_timestamp: number | null
+  order_status: string | null
+  current_order_status: string | null
 }
 
 export type Database = {
@@ -18,4 +20,4 @@ export type Database = {
       }
     }
   }
-} 
+}

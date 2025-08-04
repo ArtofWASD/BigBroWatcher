@@ -37,6 +37,11 @@ export const columns = [
     header: 'Подразделение',
     cell: info => info.getValue() || '-',
   }),
+  columnHelper.accessor('current_order_status', {
+    id: 'current_order_status',
+    header: 'Текущий статус заказа',
+    cell: info => info.getValue() || '-',
+  }),
 ]
 
 // Начальный порядок колонок
@@ -45,5 +50,6 @@ export const initialColumnOrder = [
   'order_first_time', 
   'order_second_time',
   'time_between_messages',
-  'department'
-] as const 
+  'department',
+  'current_order_status'
+] as const

@@ -25,7 +25,14 @@ export function useOrders() {
         throw error
       }
 
-      setOrders(data || [])
+      // Маппим данные из order_status в current_order_status для отображения в таблице
+      const mappedData = (data || []).map(order => {
+        return {
+          ...order,
+          current_order_status: order.order_status
+        }
+      })
+      setOrders(mappedData)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Произошла ошибка при загрузке данных')
     } finally {
@@ -34,4 +41,4 @@ export function useOrders() {
   }
 
   return { orders, loading, error, refetch: fetchOrders }
-} 
+}
