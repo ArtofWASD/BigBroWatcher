@@ -56,15 +56,21 @@ export function TablePagination({ table }: TablePaginationProps) {
             <select
               value={table.getState().pagination.pageSize}
               onChange={e => {
-                table.setPageSize(Number(e.target.value))
+                const value = e.target.value
+                if (value === 'all') {
+                  table.setPageSize(table.getFilteredRowModel().rows.length)
+                } else {
+                  table.setPageSize(Number(value))
+                }
               }}
               className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              {[5, 10, 15, 20].map(pageSize => (
+              {[10, 20, 30].map(pageSize => (
                 <option key={pageSize} value={pageSize}>
                   {pageSize}
                 </option>
               ))}
+              <option value="all">Все</option>
             </select>
           </div>
 
@@ -107,4 +113,4 @@ export function TablePagination({ table }: TablePaginationProps) {
       </div>
     </div>
   )
-} 
+}

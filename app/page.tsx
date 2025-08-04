@@ -43,7 +43,7 @@ export default function Home() {
   const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 10,
   })
   const [highlightEnabled, setHighlightEnabled] = useState(false)
   const [filterEnabled, setFilterEnabled] = useState(false)

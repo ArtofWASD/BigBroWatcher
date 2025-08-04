@@ -30,26 +30,32 @@ export function DraggableColumnHeader({ header }: DraggableColumnHeaderProps) {
     <th
       ref={setNodeRef}
       style={style}
-      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-      onClick={header.column.getToggleSortingHandler()}
+      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition-colors"
       {...attributes}
-      {...listeners}
     >
       <div className="flex items-center gap-2">
-        <div className="cursor-grab active:cursor-grabbing mr-2">
+        <div 
+          className="cursor-grab active:cursor-grabbing mr-2"
+          {...listeners}
+        >
           ⋮⋮
         </div>
-        {flexRender(
-          header.column.columnDef.header,
-          header.getContext()
-        )}
-        {header.column.getIsSorted() === 'asc' && (
-          <span className="text-gray-400">↑</span>
-        )}
-        {header.column.getIsSorted() === 'desc' && (
-          <span className="text-gray-400">↓</span>
-        )}
+        <div 
+          className="flex items-center gap-2 cursor-pointer flex-1"
+          onClick={header.column.getToggleSortingHandler()}
+        >
+          {flexRender(
+            header.column.columnDef.header,
+            header.getContext()
+          )}
+          {header.column.getIsSorted() === 'asc' && (
+            <span className="text-gray-400">↑</span>
+          )}
+          {header.column.getIsSorted() === 'desc' && (
+            <span className="text-gray-400">↓</span>
+          )}
+        </div>
       </div>
     </th>
   )
-} 
+}
