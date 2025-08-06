@@ -27,10 +27,11 @@ import {
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { useOrders } from '@/hooks/useOrders'
-import { getRowColor, filterProblemOrders } from '@/lib/timeUtils'
+import { getRowColor, filterProblemOrders, filterOrdersByDateRange, DateRange } from '@/lib/timeUtils'
 import { columns, initialColumnOrder } from '@/lib/tableColumns'
 import { DraggableColumnHeader } from '@/components/DraggableColumnHeader'
 import { HighlightToggle } from '@/components/HighlightToggle'
+import { DateFilter } from '@/components/DateFilter'
 import { TablePagination } from '@/components/TablePagination'
 import { LoadingState } from '@/components/LoadingState'
 import { ErrorState } from '@/components/ErrorState'
@@ -47,6 +48,7 @@ export default function Home() {
   })
   const [highlightEnabled, setHighlightEnabled] = useState(false)
   const [filterEnabled, setFilterEnabled] = useState(false)
+  const [dateRange, setDateRange] = useState<DateRange>({ startDate: null, endDate: null })
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>([...initialColumnOrder])
 
   // Оптимизированные обработчики для тогглеров
@@ -58,6 +60,12 @@ export default function Home() {
     setFilterEnabled(enabled)
   }, [])
 
+  const handleDateRangeChange = useCallback((newDateRange: DateRange) => {
+    setDateRange(newDateRange)
+    // Сбрасываем пагинацию при изменении фильтра
+    setPagination(prev => ({ ...prev, pageIndex: 0 }))
+  }, [])
+
   // Настройка сенсоров для drag-and-drop
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -66,10 +74,18 @@ export default function Home() {
     })
   )
 
-  // Фильтруем данные если включен фильтр проблемных заказов
+  // Применяем все фильтры последовательно
   const filteredOrders = useMemo(() => {
-    return filterProblemOrders(orders, filterEnabled)
-  }, [orders, filterEnabled])
+    let result = orders
+    
+    // Сначала фильтруем по датам
+    result = filterOrdersByDateRange(result, dateRange)
+    
+    // Затем фильтруем проблемные заказы если включен фильтр
+    result = filterProblemOrders(result, filterEnabled)
+    
+    return result
+  }, [orders, dateRange, filterEnabled])
 
   const table = useReactTable({
     data: filteredOrders,
@@ -116,12 +132,19 @@ export default function Home() {
             Таблица заказов
           </h1>
           
-          <HighlightToggle 
-            highlightEnabled={highlightEnabled} 
-            onHighlightToggle={handleHighlightToggle}
-            filterEnabled={filterEnabled}
-            onFilterToggle={handleFilterToggle}
-          />
+          <div className="flex items-center gap-4">
+            <DateFilter 
+              dateRange={dateRange}
+              onDateRangeChange={handleDateRangeChange}
+            />
+            
+            <HighlightToggle 
+              highlightEnabled={highlightEnabled} 
+              onHighlightToggle={handleHighlightToggle}
+              filterEnabled={filterEnabled}
+              onFilterToggle={handleFilterToggle}
+            />
+          </div>
         </div>
         
         <div className="bg-white rounded-lg shadow overflow-hidden">

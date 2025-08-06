@@ -86,3 +86,66 @@ export const filterProblemOrders = (orders: Order[], filterEnabled: boolean) => 
     return minutes >= TIME_THRESHOLDS.WARNING
   })
 }
+
+/**
+ * Интерфейс для диапазона дат
+ */
+export interface DateRange {
+  startDate: string | null
+  endDate: string | null
+}
+
+/**
+ * Парсит дату из строки формата "DD.MM.YYYY HH:mm:ss" или ISO формата
+ */
+export const parseOrderDate = (dateString: string | null): Date | null => {
+  if (!dateString) return null
+  
+  // Проверяем формат DD.MM.YYYY HH:mm:ss
+  const ddmmyyyyMatch = dateString.match(/(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/)
+  if (ddmmyyyyMatch) {
+    const [, day, month, year, hours, minutes, seconds] = ddmmyyyyMatch
+    return new Date(
+      parseInt(year),
+      parseInt(month) - 1, // месяцы в JS начинаются с 0
+      parseInt(day),
+      parseInt(hours),
+      parseInt(minutes),
+      parseInt(seconds)
+    )
+  }
+  
+  // Пробуем стандартный парсинг для ISO формата
+  const date = new Date(dateString)
+  return isNaN(date.getTime()) ? null : date
+}
+
+/**
+ * Фильтрует заказы по диапазону дат
+ */
+export const filterOrdersByDateRange = (orders: Order[], dateRange: DateRange) => {
+  if (!dateRange.startDate && !dateRange.endDate) {
+    return orders
+  }
+  
+  const startDate = dateRange.startDate ? new Date(dateRange.startDate) : null
+  const endDate = dateRange.endDate ? new Date(dateRange.endDate) : null
+  
+  // Устанавливаем время для корректного сравнения
+  if (startDate) {
+    startDate.setHours(0, 0, 0, 0)
+  }
+  if (endDate) {
+    endDate.setHours(23, 59, 59, 999)
+  }
+  
+  return orders.filter(order => {
+    const orderDate = parseOrderDate(order.order_first_time)
+    if (!orderDate) return false
+    
+    if (startDate && orderDate < startDate) return false
+    if (endDate && orderDate > endDate) return false
+    
+    return true
+  })
+}
