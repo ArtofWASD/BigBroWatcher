@@ -58,7 +58,8 @@ export function TablePagination({ table }: TablePaginationProps) {
               onChange={e => {
                 const value = e.target.value
                 if (value === 'all') {
-                  table.setPageSize(table.getFilteredRowModel().rows.length)
+                  const totalRows = table.getFilteredRowModel().rows.length
+                  table.setPageSize(Math.max(totalRows, 1))
                 } else {
                   table.setPageSize(Number(value))
                 }
@@ -97,12 +98,17 @@ export function TablePagination({ table }: TablePaginationProps) {
             {(() => {
               const currentPage = table.getState().pagination.pageIndex
               const totalPages = table.getPageCount()
-              const pages = []
+              const pages: React.ReactElement[] = []
+              
+              // Если нет страниц, не отображаем номера
+              if (totalPages === 0) {
+                return pages
+              }
               
               // Логика для отображения номеров страниц
               const maxVisiblePages = 5
               let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2))
-              let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1)
+              const endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1)
               
               // Корректируем начальную страницу, если достигли конца
               if (endPage - startPage < maxVisiblePages - 1) {
