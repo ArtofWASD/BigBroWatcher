@@ -29,7 +29,8 @@ export function useOrders() {
       const mappedData = (data || []).map(order => {
         return {
           ...order,
-          current_order_status: order.order_status
+          current_order_status: order.order_status,
+          all_statuses: order.order_status ? [order.order_status] : []
         }
       })
       setOrders(mappedData)

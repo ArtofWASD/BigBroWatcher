@@ -92,6 +92,83 @@ export function TablePagination({ table }: TablePaginationProps) {
               <span className="sr-only">Предыдущая страница</span>
               &lsaquo;
             </button>
+            
+            {/* Номера страниц */}
+            {(() => {
+              const currentPage = table.getState().pagination.pageIndex
+              const totalPages = table.getPageCount()
+              const pages = []
+              
+              // Логика для отображения номеров страниц
+              const maxVisiblePages = 5
+              let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2))
+              let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1)
+              
+              // Корректируем начальную страницу, если достигли конца
+              if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(0, endPage - maxVisiblePages + 1)
+              }
+              
+              // Добавляем многоточие в начале, если нужно
+              if (startPage > 0) {
+                pages.push(
+                  <button
+                    key={0}
+                    onClick={() => table.setPageIndex(0)}
+                    className="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  >
+                    1
+                  </button>
+                )
+                if (startPage > 1) {
+                  pages.push(
+                    <span key="start-ellipsis" className="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                      ...
+                    </span>
+                  )
+                }
+              }
+              
+              // Добавляем видимые страницы
+              for (let i = startPage; i <= endPage; i++) {
+                pages.push(
+                  <button
+                    key={i}
+                    onClick={() => table.setPageIndex(i)}
+                    className={`relative inline-flex items-center px-3 py-2 border text-sm font-medium ${
+                      i === currentPage
+                        ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                        : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                )
+              }
+              
+              // Добавляем многоточие в конце, если нужно
+              if (endPage < totalPages - 1) {
+                if (endPage < totalPages - 2) {
+                  pages.push(
+                    <span key="end-ellipsis" className="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                      ...
+                    </span>
+                  )
+                }
+                pages.push(
+                  <button
+                    key={totalPages - 1}
+                    onClick={() => table.setPageIndex(totalPages - 1)}
+                    className="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  >
+                    {totalPages}
+                  </button>
+                )
+              }
+              
+              return pages
+            })()}
+            
             <button
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}

@@ -8,6 +8,7 @@ export type Order = {
   first_order_timestamp: number | null
   order_status: string | null
   current_order_status: string | null
+  all_statuses?: string[] // Массив всех статусов для выпадающего меню
 }
 
 export type Database = {

@@ -1,5 +1,7 @@
 import { createColumnHelper } from '@tanstack/react-table'
+import { createElement } from 'react'
 import { parseProcessingTime } from './timeUtils'
+import { StatusDropdown } from '@/components/StatusDropdown'
 import type { Order } from '@/types/database'
 
 // Создаем helper для колонок
@@ -39,17 +41,23 @@ export const columns = [
   }),
   columnHelper.accessor('current_order_status', {
     id: 'current_order_status',
-    header: 'Текущий статус заказа',
-    cell: info => info.getValue() || '-',
+    header: 'Последний статус заказа',
+    cell: info => {
+      const row = info.row.original
+      return createElement(StatusDropdown, { 
+        currentStatus: info.getValue(),
+        allStatuses: row.all_statuses
+      })
+    },
   }),
 ]
 
 // Начальный порядок колонок
 export const initialColumnOrder = [
   'order_id',
+  'current_order_status',
   'order_first_time', 
   'order_second_time',
   'time_between_messages',
-  'department',
-  'current_order_status'
+  'department'
 ] as const
