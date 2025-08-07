@@ -41,7 +41,7 @@ export const columns = [
   }),
   columnHelper.accessor('current_order_status', {
     id: 'current_order_status',
-    header: 'Последний статус заказа',
+    header: 'Текущий статус заказа',
     cell: info => {
       const row = info.row.original
       return createElement(StatusDropdown, { 
@@ -55,9 +55,9 @@ export const columns = [
 // Начальный порядок колонок
 export const initialColumnOrder = [
   'order_id',
-  'current_order_status',
   'order_first_time', 
   'order_second_time',
   'time_between_messages',
-  'department'
+  'department',
+  'current_order_status'
 ] as const

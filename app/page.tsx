@@ -177,17 +177,25 @@ export default function Home() {
                         key={row.id} 
                         className={rowColor}
                       >
-                        {row.getVisibleCells().map(cell => (
-                          <td
-                            key={cell.id}
-                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        ))}
+                        {row.getVisibleCells().map(cell => {
+                          // Для колонки статуса используем другие стили
+                          const isStatusColumn = cell.column.id === 'current_order_status'
+                          const cellClassName = isStatusColumn 
+                            ? "px-6 py-4 text-sm text-gray-900 max-w-xs"
+                            : "px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                          
+                          return (
+                            <td
+                              key={cell.id}
+                              className={cellClassName}
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </td>
+                          )
+                        })}
                       </tr>
                     )
                   })}
