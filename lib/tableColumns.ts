@@ -27,6 +27,8 @@ export const columns = [
   columnHelper.accessor('time_between_messages', {
     id: 'time_between_messages',
     header: 'Время обработки заказа',
+    size: 120,
+    maxSize: 140,
     cell: info => info.getValue() || '-',
     sortingFn: (rowA, rowB) => {
       const timeA = parseProcessingTime(rowA.getValue('time_between_messages'))
@@ -42,6 +44,8 @@ export const columns = [
   columnHelper.accessor('current_order_status', {
     id: 'current_order_status',
     header: 'Текущий статус заказа',
+    size: 220,
+    minSize: 200,
     cell: info => {
       const row = info.row.original
       return createElement(StatusDropdown, { 
