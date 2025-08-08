@@ -168,6 +168,7 @@ export default function Home() {
               orders={filteredOrders} 
               onDepartmentClick={handleDepartmentClick}
               selectedDepartment={selectedDepartment}
+              dateRange={dateRange}
             />
           </div>
         )}

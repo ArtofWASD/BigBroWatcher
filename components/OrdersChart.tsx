@@ -12,12 +12,13 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import type { Order } from '@/types/database'
-import { parseProcessingTime } from '@/lib/timeUtils'
+import { parseProcessingTime, DateRange } from '@/lib/timeUtils'
 
 interface OrdersChartProps {
   orders: Order[]
   onDepartmentClick?: (department: string) => void
   selectedDepartment?: string | null
+  dateRange?: DateRange
 }
 
 interface ChartData {
@@ -29,7 +30,33 @@ interface ChartData {
   total: number
 }
 
-export function OrdersChart({ orders, onDepartmentClick, selectedDepartment }: OrdersChartProps) {
+export function OrdersChart({ orders, onDepartmentClick, selectedDepartment, dateRange }: OrdersChartProps) {
+  // Функция для форматирования диапазона дат
+  const formatDateRange = (dateRange?: DateRange): string => {
+    if (!dateRange || (!dateRange.startDate && !dateRange.endDate)) {
+      return 'за всё время'
+    }
+    
+    const formatDate = (dateString: string) => {
+      const date = new Date(dateString)
+      return date.toLocaleDateString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      })
+    }
+    
+    if (dateRange.startDate && dateRange.endDate) {
+      return `с ${formatDate(dateRange.startDate)} по ${formatDate(dateRange.endDate)}`
+    } else if (dateRange.startDate) {
+      return `с ${formatDate(dateRange.startDate)}`
+    } else if (dateRange.endDate) {
+      return `по ${formatDate(dateRange.endDate)}`
+    }
+    
+    return 'за всё время'
+  }
+
   const chartData = useMemo(() => {
     // Группируем заказы по подразделениям
     const departmentGroups = orders.reduce((acc, order) => {
@@ -129,7 +156,7 @@ export function OrdersChart({ orders, onDepartmentClick, selectedDepartment }: O
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <h2 className="text-xl font-semibold text-gray-900 mb-4">
-        Распределение заказов по подразделениям и времени обработки
+        Распределение заказов по подразделениям и времени обработки {formatDateRange(dateRange)}
       </h2>
       
       <div className="h-96">
