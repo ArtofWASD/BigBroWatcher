@@ -133,6 +133,15 @@ export function OrdersChart({ orders, onDepartmentClick, selectedDepartment, dat
     return null
   }
 
+  // Подсчет заказов для "Возрождение" и остальных филиалов
+  const vozrozhdenieTotalOrders = useMemo(() => {
+    return orders.filter(order => order.department === 'Возрождение').length
+  }, [orders])
+
+  const otherDepartmentsTotalOrders = useMemo(() => {
+    return orders.filter(order => order.department !== 'Возрождение').length
+  }, [orders])
+
   // Обработчик клика по столбцу
   const handleBarClick = (data: { payload?: ChartData }) => {
     if (onDepartmentClick && data && data.payload) {
@@ -229,7 +238,9 @@ export function OrdersChart({ orders, onDepartmentClick, selectedDepartment, dat
         </ResponsiveContainer>
       </div>
       
-      <div className="mt-4 text-sm text-gray-600">
+      <div className="mt-2 text-sm text-gray-600">
+        <p><span className='font-bold'>Возрождение:</span> {vozrozhdenieTotalOrders} заказов</p>
+        <p><span className='font-bold'>Магазины</span>: {otherDepartmentsTotalOrders} заказов</p>
         <p>График показывает распределение заказов по подразделениям с разбивкой по времени обработки.</p>
         <p>Подразделения отсортированы по общему количеству заказов.</p>
       </div>
