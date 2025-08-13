@@ -1,16 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getPaginationRowModel,
-  flexRender,
-  SortingState,
-  PaginationState,
-  ColumnOrderState,
-} from '@tanstack/react-table'
+import { useCallback } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -27,8 +17,8 @@ import {
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { useOrders } from '@/hooks/useOrders'
-import { getRowColor, filterOrdersByDateRange, DateRange } from '@/lib/timeUtils'
-import { columns, initialColumnOrder } from '@/lib/tableColumns'
+import { useOrderTable } from '@/hooks/useOrderTable'
+import { getRowColor } from '@/lib/timeUtils'
 import { DraggableColumnHeader } from '@/components/DraggableColumnHeader'
 import { HighlightToggle } from '@/components/HighlightToggle'
 import { DateFilter } from '@/components/DateFilter'
@@ -38,34 +28,32 @@ import { LoadingState } from '@/components/LoadingState'
 import { ErrorState } from '@/components/ErrorState'
 import { Instructions } from '@/components/Instructions'
 import { OrdersChart } from '@/components/OrdersChart'
-
-
+import { useAppContext } from '@/contexts/AppContext'
 
 export default function Home() {
   const { orders, loading, error, refetch } = useOrders()
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  })
-  const [highlightEnabled, setHighlightEnabled] = useState(false)
-  const [dateRange, setDateRange] = useState<DateRange>({ startDate: null, endDate: null })
-  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>([...initialColumnOrder])
-  const [showAnalytics, setShowAnalytics] = useState(false)
-  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null)
+  const {
+    highlightEnabled,
+    dateRange,
+    setDateRange,
+    showAnalytics,
+    toggleAnalytics,
+    selectedDepartment,
+    setSelectedDepartment,
+  } = useAppContext()
 
-  // Оптимизированный обработчик для тогглера
-  const handleHighlightToggle = useCallback((enabled: boolean) => {
-    setHighlightEnabled(enabled)
-  }, [])
-
-  const handleDateRangeChange = useCallback((newDateRange: DateRange) => {
+  // Memoized handlers
+  const handleDateRangeChange = useCallback((newDateRange: { startDate: string | null; endDate: string | null }) => {
     setDateRange(newDateRange)
-    // Сбрасываем пагинацию при изменении фильтра
-    setPagination(prev => ({ ...prev, pageIndex: 0 }))
-  }, [])
+  }, [setDateRange])
 
-  // Настройка сенсоров для drag-and-drop
+  const {
+    table,
+    columnOrder,
+    setColumnOrder,
+  } = useOrderTable(orders, dateRange, selectedDepartment)
+
+  // Setup sensors for drag-and-drop
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -73,49 +61,12 @@ export default function Home() {
     })
   )
 
-  // Обработчик клика по подразделению в графике
+  // Handler for department click in chart
   const handleDepartmentClick = useCallback((department: string) => {
     setSelectedDepartment(department === selectedDepartment ? null : department)
-    setPagination(prev => ({ ...prev, pageIndex: 0 }))
-  }, [selectedDepartment])
+  }, [selectedDepartment, setSelectedDepartment])
 
-  // Обработчик переключения аналитики
-  const handleAnalyticsToggle = useCallback(() => {
-    setShowAnalytics(!showAnalytics)
-  }, [showAnalytics])
-
-  // Применяем все фильтры последовательно
-  const filteredOrders = useMemo(() => {
-    let result = orders
-    
-    // Фильтруем по датам
-    result = filterOrdersByDateRange(result, dateRange)
-    
-    // Фильтруем по выбранному подразделению
-    if (selectedDepartment) {
-      result = result.filter(order => order.department === selectedDepartment)
-    }
-    
-    return result
-  }, [orders, dateRange, selectedDepartment])
-
-  const table = useReactTable({
-    data: filteredOrders,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    state: {
-      sorting,
-      pagination,
-      columnOrder,
-    },
-    onSortingChange: setSorting,
-    onPaginationChange: setPagination,
-    onColumnOrderChange: setColumnOrder,
-  })
-
-  // Обработчик завершения перетаскивания
+  // Handler for drag end event
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
@@ -147,7 +98,7 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <AnalyticsToggle 
               showAnalytics={showAnalytics}
-              onToggle={handleAnalyticsToggle}
+              onToggle={toggleAnalytics}
             />
             
             <DateFilter 
@@ -157,7 +108,7 @@ export default function Home() {
             
             <HighlightToggle 
               highlightEnabled={highlightEnabled} 
-              onHighlightToggle={handleHighlightToggle}
+              onHighlightToggle={() => {}} // Handled by context
             />
           </div>
         </div>
@@ -165,9 +116,8 @@ export default function Home() {
         {showAnalytics && (
           <div className="mb-8">
             <OrdersChart 
-              orders={filteredOrders} 
+              orders={table.getFilteredRowModel().rows.map(row => row.original)} 
               onDepartmentClick={handleDepartmentClick}
-              selectedDepartment={selectedDepartment}
               dateRange={dateRange}
             />
           </div>
@@ -218,7 +168,7 @@ export default function Home() {
                         className={rowColor}
                       >
                         {row.getVisibleCells().map(cell => {
-                          // Для разных колонок используем разные стили
+                          // For different columns we use different styles
                           const isStatusColumn = cell.column.id === 'current_order_status'
                           const isTimeColumn = cell.column.id === 'time_between_messages'
                           const isOrderIdColumn = cell.column.id === 'order_id'
@@ -226,11 +176,11 @@ export default function Home() {
                           let cellClassName = "px-6 py-4 text-sm text-gray-900"
                           
                           if (isStatusColumn) {
-                            cellClassName += " w-72 min-w-72" // Увеличиваем ширину для статуса (288px)
+                            cellClassName += " w-72 min-w-72" // Increase width for status (288px)
                           } else if (isTimeColumn) {
-                            cellClassName += " w-32 max-w-32" // Уменьшаем ширину для времени обработки (128px)
+                            cellClassName += " w-32 max-w-32" // Reduce width for processing time (128px)
                           } else if (isOrderIdColumn) {
-                            cellClassName += " w-28 max-w-28" // Уменьшаем ширину для номера заказа (112px)
+                            cellClassName += " w-28 max-w-28" // Reduce width for order ID (112px)
                           } else {
                             cellClassName += " whitespace-nowrap"
                           }
@@ -240,12 +190,9 @@ export default function Home() {
                               key={cell.id}
                               className={cellClassName}
                             >
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </td>
-                          )
+                              {String(cell.renderValue() ?? '-')}
+                          </td>
+                        )
                         })}
                       </tr>
                     )

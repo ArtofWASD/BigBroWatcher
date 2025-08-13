@@ -17,7 +17,6 @@ import { parseProcessingTime, DateRange } from '@/lib/timeUtils'
 interface OrdersChartProps {
   orders: Order[]
   onDepartmentClick?: (department: string) => void
-  selectedDepartment?: string | null
   dateRange?: DateRange
 }
 
@@ -30,7 +29,7 @@ interface ChartData {
   total: number
 }
 
-export function OrdersChart({ orders, onDepartmentClick, selectedDepartment, dateRange }: OrdersChartProps) {
+export function OrdersChart({ orders, onDepartmentClick, dateRange }: OrdersChartProps) {
   // Функция для форматирования диапазона дат
   const formatDateRange = (dateRange?: DateRange): string => {
     if (!dateRange || (!dateRange.startDate && !dateRange.endDate)) {

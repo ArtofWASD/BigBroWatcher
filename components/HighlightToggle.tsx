@@ -1,5 +1,7 @@
 'use client'
 
+import { useAppContext } from '@/contexts/AppContext'
+
 interface HighlightToggleProps {
   highlightEnabled: boolean
   onHighlightToggle: (enabled: boolean) => void
@@ -9,9 +11,12 @@ export function HighlightToggle({
   highlightEnabled, 
   onHighlightToggle
 }: HighlightToggleProps) {
+  const { toggleHighlight } = useAppContext()
+  
   const handleHighlightToggle = () => {
     const newState = !highlightEnabled
     onHighlightToggle(newState)
+    toggleHighlight()
   }
 
   return (
