@@ -13,7 +13,7 @@ export function validateOrderData(order: Partial<Order> & { id?: unknown }): Ord
     if (Array.isArray(order.order_status)) {
       statusArray = order.order_status.filter(Boolean)
     } 
-    // If it's a string that looks like an array
+    // If it's a string that looks like an array (JSON)
     else if (typeof order.order_status === 'string') {
       try {
         const parsed = JSON.parse(order.order_status)
@@ -23,8 +23,9 @@ export function validateOrderData(order: Partial<Order> & { id?: unknown }): Ord
           statusArray = [order.order_status]
         }
       } catch {
-        // If parsing fails, treat as a single status
-        statusArray = [order.order_status]
+        // If parsing fails, try to split by comma
+        // This handles cases like "Одобрен ожидается оплата,Выполнен"
+        statusArray = (order.order_status as string).split(',').map((s: string) => s.trim()).filter(Boolean)
       }
     }
   }
@@ -42,7 +43,8 @@ export function validateOrderData(order: Partial<Order> & { id?: unknown }): Ord
           allStatuses = [order.all_statuses]
         }
       } catch {
-        allStatuses = [order.all_statuses]
+        // If parsing fails, try to split by comma
+        allStatuses = (order.all_statuses as string).split(',').map((s: string) => s.trim()).filter(Boolean)
       }
     }
   } else {
