@@ -48,6 +48,11 @@ export const columns = [
     minSize: 200,
     cell: info => {
       const row = info.row.original
+      // DEBUG: Log what we're passing to StatusDropdown
+      console.log('Passing to StatusDropdown:', { 
+        currentStatus: info.getValue(),
+        allStatuses: row.all_statuses
+      });
       return createElement(StatusDropdown, { 
         currentStatus: info.getValue(),
         allStatuses: row.all_statuses
