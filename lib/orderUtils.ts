@@ -4,6 +4,52 @@ import type { Order } from '@/types/database'
  * Validates and normalizes order data
  */
 export function validateOrderData(order: Partial<Order> & { id?: unknown }): Order {
+  // Process order_status to extract status array
+  let statusArray: string[] = []
+  let allStatuses: string[] = []
+  
+  if (order.order_status) {
+    // If order_status is already an array
+    if (Array.isArray(order.order_status)) {
+      statusArray = order.order_status.filter(Boolean)
+    } 
+    // If it's a string that looks like an array
+    else if (typeof order.order_status === 'string') {
+      try {
+        const parsed = JSON.parse(order.order_status)
+        if (Array.isArray(parsed)) {
+          statusArray = parsed.filter(Boolean)
+        } else {
+          statusArray = [order.order_status]
+        }
+      } catch {
+        // If parsing fails, treat as a single status
+        statusArray = [order.order_status]
+      }
+    }
+  }
+  
+  // For all_statuses, use the same logic or fallback to statusArray
+  if (order.all_statuses) {
+    if (Array.isArray(order.all_statuses)) {
+      allStatuses = order.all_statuses.filter(Boolean)
+    } else if (typeof order.all_statuses === 'string') {
+      try {
+        const parsed = JSON.parse(order.all_statuses)
+        if (Array.isArray(parsed)) {
+          allStatuses = parsed.filter(Boolean)
+        } else {
+          allStatuses = [order.all_statuses]
+        }
+      } catch {
+        allStatuses = [order.all_statuses]
+      }
+    }
+  } else {
+    // Fallback to statusArray if all_statuses is not provided
+    allStatuses = [...statusArray]
+  }
+
   // Ensure required fields exist with proper types
   return {
     id: typeof order.id === 'number' ? order.id : 0,
@@ -14,11 +60,7 @@ export function validateOrderData(order: Partial<Order> & { id?: unknown }): Ord
     department: order.department ?? null,
     first_order_timestamp: order.first_order_timestamp ?? null,
     order_status: order.order_status ?? null,
-    current_order_status: Array.isArray(order.current_order_status) 
-      ? order.current_order_status.filter(Boolean) 
-      : [],
-    all_statuses: Array.isArray(order.all_statuses) 
-      ? order.all_statuses.filter(Boolean) 
-      : [],
+    current_order_status: statusArray,
+    all_statuses: allStatuses,
   }
 }

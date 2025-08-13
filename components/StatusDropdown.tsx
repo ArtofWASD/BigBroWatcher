@@ -37,8 +37,14 @@ export function StatusDropdown({ currentStatus, allStatuses = [] }: StatusDropdo
     )
   }
 
-  // Если нет статусов для выпадающего меню, показываем только текущий статус
-  if (!allStatuses.length) {
+  // Используем allStatuses если есть, иначе fallback на statusArray
+  const effectiveAllStatuses = allStatuses && allStatuses.length > 0 ? allStatuses : (statusArray || []);
+  
+  // Убираем дубликаты и фильтруем пустые значения
+  const uniqueStatuses = Array.from(new Set(effectiveAllStatuses.filter(Boolean)))
+  
+  // Если у нас только один статус, показываем его без выпадающего меню
+  if (uniqueStatuses.length <= 1) {
     return (
       <div className="max-w-full">
         <div className="text-sm leading-relaxed break-words py-1">
@@ -48,9 +54,6 @@ export function StatusDropdown({ currentStatus, allStatuses = [] }: StatusDropdo
     )
   }
 
-  // Убираем дубликаты и фильтруем пустые значения
-  const uniqueStatuses = Array.from(new Set(allStatuses.filter(Boolean)))
-  
   // Сортируем статусы так, чтобы текущий был наверху
   const sortedStatuses = uniqueStatuses.sort((a, b) => {
     const aIsCurrent = a === currentStatusDisplay
@@ -89,13 +92,12 @@ export function StatusDropdown({ currentStatus, allStatuses = [] }: StatusDropdo
           <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
             <div className="py-1">
               {sortedStatuses.map((status, index) => {
-                const isInStatusArray = statusArray?.includes(status)
-                const isCurrentStatus = status === currentStatusDisplay // Только последний статус считается текущим
+                const isCurrentStatus = status === currentStatusDisplay
                 return (
                   <div
                     key={index}
                     className={`px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 ${
-                      isInStatusArray 
+                      isCurrentStatus 
                         ? 'bg-blue-50 text-blue-700 font-medium' 
                         : 'text-gray-900'
                     }`}
