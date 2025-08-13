@@ -8,16 +8,10 @@ export function validateOrderData(order: Partial<Order> & { id?: unknown }): Ord
   let statusArray: string[] = []
   let allStatuses: string[] = []
   
-  // DEBUG: Log raw order data
-  console.log('Raw order data:', order);
-  
   if (order.order_status) {
-    console.log('Processing order_status:', order.order_status, 'type:', typeof order.order_status);
-    
     // If order_status is already an array
     if (Array.isArray(order.order_status)) {
       statusArray = order.order_status.filter(Boolean)
-      console.log('Array case - statusArray:', statusArray);
     } 
     // If it's a string that looks like an array (JSON)
     else if (typeof order.order_status === 'string') {
@@ -25,17 +19,13 @@ export function validateOrderData(order: Partial<Order> & { id?: unknown }): Ord
         const parsed = JSON.parse(order.order_status)
         if (Array.isArray(parsed)) {
           statusArray = parsed.filter(Boolean)
-          console.log('JSON array case - statusArray:', statusArray);
         } else {
           statusArray = [order.order_status]
-          console.log('JSON non-array case - statusArray:', statusArray);
         }
-      } catch (e) {
-        console.log('JSON parse failed, trying comma split');
+      } catch {
         // If parsing fails, try to split by comma
         // This handles cases like "Одобрен ожидается оплата,Выполнен"
         statusArray = (order.order_status as string).split(',').map((s: string) => s.trim()).filter(Boolean)
-        console.log('Comma split case - statusArray:', statusArray);
       }
     }
   }
@@ -61,8 +51,6 @@ export function validateOrderData(order: Partial<Order> & { id?: unknown }): Ord
     // Fallback to statusArray if all_statuses is not provided
     allStatuses = [...statusArray]
   }
-
-  console.log('Final result for order', order.id, ': statusArray=', statusArray, 'allStatuses=', allStatuses);
 
   // Ensure required fields exist with proper types
   return {

@@ -22,9 +22,6 @@ const ChevronDownIcon = ({ className }: { className?: string }) => (
 export function StatusDropdown({ currentStatus, allStatuses = [] }: StatusDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
 
-  // DEBUG: Log what we receive
-  console.log('StatusDropdown received:', { currentStatus, allStatuses });
-
   // Теперь currentStatus уже массив, просто проверяем и фильтруем
   const statusArray = currentStatus ? currentStatus.filter(Boolean) : null
   

@@ -28,6 +28,7 @@ import { LoadingState } from '@/components/LoadingState'
 import { ErrorState } from '@/components/ErrorState'
 import { Instructions } from '@/components/Instructions'
 import { OrdersChart } from '@/components/OrdersChart'
+import { StatusDropdown } from '@/components/StatusDropdown'
 import { useAppContext } from '@/contexts/AppContext'
 
 export default function Home() {
@@ -190,9 +191,18 @@ export default function Home() {
                               key={cell.id}
                               className={cellClassName}
                             >
-                              {String(cell.renderValue() ?? '-')}
-                          </td>
-                        )
+                              {isStatusColumn ? (
+                                <div className="max-w-full">
+                                  <StatusDropdown 
+                                    currentStatus={row.original.current_order_status}
+                                    allStatuses={row.original.all_statuses}
+                                  />
+                                </div>
+                              ) : (
+                                String(cell.renderValue() ?? '-')
+                              )}
+                            </td>
+                          )
                         })}
                       </tr>
                     )
