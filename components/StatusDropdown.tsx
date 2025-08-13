@@ -43,16 +43,8 @@ export function StatusDropdown({ currentStatus, allStatuses = [] }: StatusDropdo
   // Убираем дубликаты и фильтруем пустые значения
   const uniqueStatuses = Array.from(new Set(effectiveAllStatuses.filter(Boolean)))
   
-  // Если у нас только один статус, показываем его без выпадающего меню
-  if (uniqueStatuses.length <= 1) {
-    return (
-      <div className="max-w-full">
-        <div className="text-sm leading-relaxed break-words py-1">
-          {currentStatusDisplay}
-        </div>
-      </div>
-    )
-  }
+  // Всегда показываем выпадающее меню если у нас есть статусы
+  // Даже если всего один статус, показываем его в выпадающем меню для единообразия
 
   // Сортируем статусы так, чтобы текущий был наверху
   const sortedStatuses = uniqueStatuses.sort((a, b) => {
