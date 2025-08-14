@@ -30,6 +30,8 @@ import { Instructions } from '@/components/Instructions'
 import { OrdersChart } from '@/components/OrdersChart'
 import { StatusDropdown } from '@/components/StatusDropdown'
 import { useAppContext } from '@/contexts/AppContext'
+import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
   const { orders, loading, error, refetch } = useOrders()
@@ -41,7 +43,11 @@ export default function Home() {
     toggleAnalytics,
     selectedDepartment,
     setSelectedDepartment,
+    user,
+    loading: userLoading,
   } = useAppContext()
+  
+  const router = useRouter()
 
   // Memoized handlers
   const handleDateRangeChange = useCallback((newDateRange: { startDate: string | null; endDate: string | null }) => {
@@ -79,6 +85,17 @@ export default function Home() {
       setColumnOrder(newColumnOrder)
     }
   }
+  
+  // Handler for logout
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+  
+  // Показываем состояние загрузки, если данные пользователя еще загружаются
+  if (userLoading) {
+    return <LoadingState />
+  }
 
   if (loading) {
     return <LoadingState />
@@ -97,6 +114,19 @@ export default function Home() {
           </h1>
           
           <div className="flex items-center gap-4">
+            {user && (
+              <div className="text-sm text-gray-700">
+                Привет, {user.email}
+              </div>
+            )}
+            
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Выйти
+            </button>
+            
             <AnalyticsToggle 
               showAnalytics={showAnalytics}
               onToggle={toggleAnalytics}
