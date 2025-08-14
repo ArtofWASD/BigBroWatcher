@@ -3,8 +3,18 @@ import { validateOrderData } from '@/lib/orderUtils'
 
 export async function GET() {
   try {
-    // Use server client to bypass RLS
+    // Use server client with session
     const supabase = await createClient()
+    
+    // Проверяем сессию пользователя
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    if (!session) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
     
     const { data, error } = await supabase
       .from('orders')

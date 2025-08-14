@@ -3,6 +3,11 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Игнорируем служебные запросы браузера
+  if (request.nextUrl.pathname.startsWith('/.well-known/')) {
+    return NextResponse.next()
+  }
+  
   const supabase = await createClient()
   
   // Проверяем сессию пользователя
