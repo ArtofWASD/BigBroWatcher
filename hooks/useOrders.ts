@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import { validateOrderData } from '@/lib/orderUtils'
 import type { Order } from '@/types/database'
 
 export function useOrders() {
@@ -17,18 +15,14 @@ export function useOrders() {
       setLoading(true)
       setError(null)
       
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .order('id', { ascending: false })
+      const response = await fetch('/api/orders')
+      const result = await response.json()
 
-      if (error) {
-        throw error
+      if (!response.ok || result.error) {
+        throw new Error(result.error || 'Произошла ошибка при загрузке данных')
       }
 
-      // Validate and normalize data
-      const validatedData = (data || []).map(validateOrderData)
-      setOrders(validatedData)
+      setOrders(result.orders || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Произошла ошибка при загрузке данных')
     } finally {
