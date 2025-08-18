@@ -1,18 +1,22 @@
-import { supabaseAdmin } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import { validateOrderData } from '@/lib/orderUtils'
-import type { Order } from '@/types/database'
 
 export async function GET() {
   try {
-    // Use admin client to bypass RLS
-    if (!supabaseAdmin) {
+    // Use server client with session
+    const supabase = await createClient()
+    
+    // Проверяем сессию пользователя
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    if (!session) {
       return new Response(
-        JSON.stringify({ error: 'Supabase admin client is not configured' }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
       )
     }
     
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await supabase
       .from('orders')
       .select('*')
       .order('id', { ascending: false })
@@ -31,10 +35,10 @@ export async function GET() {
       JSON.stringify({ orders: validatedData }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     )
-  } catch (err) {
+  } catch (error: unknown) {
     return new Response(
       JSON.stringify({ 
-        error: err instanceof Error ? err.message : 'Произошла ошибка при загрузке данных' 
+        error: error instanceof Error ? error.message : 'Произошла ошибка при загрузке данных' 
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     )

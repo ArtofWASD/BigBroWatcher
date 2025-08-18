@@ -18,13 +18,23 @@ export function useOrders() {
       const response = await fetch('/api/orders')
       const result = await response.json()
 
-      if (!response.ok || result.error) {
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Пользователь не авторизован, перенаправляем на страницу входа
+          window.location.href = '/login'
+          return
+        }
         throw new Error(result.error || 'Произошла ошибка при загрузке данных')
+      }
+
+      if (result.error) {
+        throw new Error(result.error)
       }
 
       setOrders(result.orders || [])
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Произошла ошибка при загрузке данных')
+      const errorMessage = err instanceof Error ? err.message : 'Произошла ошибка при загрузке данных'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
