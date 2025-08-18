@@ -2,6 +2,7 @@
 
 import { useForm } from 'react-hook-form'
 import { login } from '@/app/login/actions'
+import { useRouter } from 'next/navigation'
 
 type LoginFormInputs = {
   email: string
@@ -9,6 +10,7 @@ type LoginFormInputs = {
 }
 
 export default function LoginForm() {
+  const router = useRouter()
   const {
     register,
     handleSubmit,
@@ -19,8 +21,6 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginFormInputs) => {
     try {
-      console.log('Attempting login with:', data)
-      
       // Очищаем предыдущие ошибки
       clearErrors()
       
@@ -32,14 +32,11 @@ export default function LoginForm() {
       const result = await login(formData)
       
       if (result?.error) {
-        console.error('Login error:', result.error)
         setError('root', {
           message: `Ошибка входа: ${result.error}`,
         })
         return
       }
-      
-      console.log('Login successful')
     } catch (error: unknown) {
       console.error('Unexpected error:', error)
       setError('root', {
@@ -120,6 +117,15 @@ export default function LoginForm() {
             >
               {isSubmitting ? 'Вход...' : 'Войти'}
             </button>
+          </div>
+          
+          <div className="text-sm text-center">
+            <a
+              href="/register"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Нет аккаунта? Зарегистрироваться
+            </a>
           </div>
         </form>
       </div>

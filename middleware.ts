@@ -13,10 +13,10 @@ export async function middleware(request: NextRequest) {
   // Проверяем сессию пользователя
   const { data: { session } } = await supabase.auth.getSession()
   
-  // Разрешаем доступ к странице входа без аутентификации
-  const isAuthPage = request.nextUrl.pathname === '/login'
+  // Разрешаем доступ к страницам входа и регистрации без аутентификации
+  const isAuthPage = request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/register'
   
-  // Защищаем все маршруты, кроме страницы входа
+  // Защищаем все маршруты, кроме страниц аутентификации
   if (!session && !isAuthPage) {
     // Перенаправляем на страницу входа
     const url = request.nextUrl.clone()
@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
   
-  // Если пользователь авторизован и пытается зайти на страницу входа, перенаправляем на главную
+  // Если пользователь авторизован и пытается зайти на страницы аутентификации, перенаправляем на главную
   if (session && isAuthPage) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
