@@ -4,6 +4,7 @@ import { createContext, useContext, useState, ReactNode, useEffect } from 'react
 import { DateRange } from '@/lib/timeUtils'
 import { supabase } from '@/lib/supabase'
 import { User } from '@supabase/supabase-js'
+import { useRouter } from 'next/navigation'
 
 interface AppContextType {
   highlightEnabled: boolean
@@ -15,6 +16,7 @@ interface AppContextType {
   selectedDepartment: string | null
   setSelectedDepartment: (department: string | null) => void
   user: User | null
+  setUser: (user: User | null) => void
   loading: boolean
 }
 
@@ -27,6 +29,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   const toggleHighlight = () => setHighlightEnabled(!highlightEnabled)
   const toggleAnalytics = () => setShowAnalytics(!showAnalytics)
@@ -48,14 +51,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
     getUser()
     
     // Подписываемся на изменения состояния аутентификации
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      const newUser = session?.user ?? null
+      setUser(newUser)
+      
+      // Обрабатываем события аутентификации
+      if (event === 'SIGNED_OUT') {
+        // Пользователь вышел из аккаунта
+        setUser(null)
+        if (window.location.pathname !== '/login') {
+          router.push('/login')
+        }
+      }
     })
     
     return () => {
       subscription.unsubscribe()
     }
-  }, [])
+  }, [router])
 
   return (
     <AppContext.Provider
@@ -69,6 +84,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedDepartment,
         setSelectedDepartment,
         user,
+        setUser,
         loading,
       }}
     >

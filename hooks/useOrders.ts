@@ -35,7 +35,6 @@ export function useOrders() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Произошла ошибка при загрузке данных'
       setError(errorMessage)
-      console.error('Fetch orders error:', err)
     } finally {
       setLoading(false)
     }

@@ -45,6 +45,7 @@ export default function Home() {
     setSelectedDepartment,
     user,
     loading: userLoading,
+    setUser, // Добавляем setUser из контекста
   } = useAppContext()
   
   const router = useRouter()
@@ -88,8 +89,12 @@ export default function Home() {
   
   // Handler for logout
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push('/login')
+    try {
+      // Используем серверный endpoint для выхода
+      window.location.href = '/api/logout'
+    } catch (error) {
+      console.error('Unexpected logout error:', error)
+    }
   }
   
   // Показываем состояние загрузки, если данные пользователя еще загружаются

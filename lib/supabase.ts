@@ -1,4 +1,4 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
 
 // Validate environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -13,7 +13,7 @@ if (!supabaseAnonKey) {
 }
 
 // Client for client-side operations (RLS enforced)
-export const supabase = createSupabaseClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
 
 // Server-side client (bypasses RLS) - only available on server
 export const supabaseAdmin = null 
