@@ -2,7 +2,7 @@ import LoginForm from '@/components/auth/LoginForm'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export default async function LoginPage({ searchParams }) {
+export default async function LoginPage(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   // Проверяем, авторизован ли пользователь
   const supabase = await createClient()
   const { data: { session } } = await supabase.auth.getSession()
@@ -12,7 +12,8 @@ export default async function LoginPage({ searchParams }) {
     redirect('/')
   }
 
-  const message = searchParams?.message
+  const searchParams = await props.searchParams
+  const message = searchParams.message as string | undefined
 
   return (
     <div>

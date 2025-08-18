@@ -2,7 +2,6 @@
 
 import { useForm } from 'react-hook-form'
 import { register } from '@/app/register/actions'
-import { useRouter } from 'next/navigation'
 
 type RegisterFormInputs = {
   email: string

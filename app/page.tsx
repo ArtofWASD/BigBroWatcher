@@ -30,8 +30,6 @@ import { Instructions } from '@/components/Instructions'
 import { OrdersChart } from '@/components/OrdersChart'
 import { StatusDropdown } from '@/components/StatusDropdown'
 import { useAppContext } from '@/contexts/AppContext'
-import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
 
 export default function Home() {
   const { orders, loading, error, refetch } = useOrders()
@@ -46,8 +44,6 @@ export default function Home() {
     user,
     loading: userLoading,
   } = useAppContext()
-  
-  const router = useRouter()
 
   // Memoized handlers
   const handleDateRangeChange = useCallback((newDateRange: { startDate: string | null; endDate: string | null }) => {

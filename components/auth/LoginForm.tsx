@@ -2,7 +2,6 @@
 
 import { useForm } from 'react-hook-form'
 import { login } from '@/app/login/actions'
-import { useRouter } from 'next/navigation'
 
 type LoginFormInputs = {
   email: string
