@@ -10,7 +10,6 @@ type LoginFormInputs = {
 }
 
 export default function LoginForm() {
-  const router = useRouter()
   const {
     register,
     handleSubmit,

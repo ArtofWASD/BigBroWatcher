@@ -12,7 +12,6 @@ type RegisterFormInputs = {
 }
 
 export default function RegisterForm() {
-  const router = useRouter()
   const {
     register: registerField,
     handleSubmit,

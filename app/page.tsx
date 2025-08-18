@@ -45,7 +45,6 @@ export default function Home() {
     setSelectedDepartment,
     user,
     loading: userLoading,
-    setUser, // Добавляем setUser из контекста
   } = useAppContext()
   
   const router = useRouter()
