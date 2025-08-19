@@ -28,6 +28,7 @@ import { LoadingState } from '@/components/LoadingState'
 import { ErrorState } from '@/components/ErrorState'
 import { Instructions } from '@/components/Instructions'
 import { OrdersChart } from '@/components/table/OrdersChart'
+import { OrdersTimePileChart } from '@/components/table/OrdersTimePileChart'
 import { StatusDropdown } from '@/components/table/StatusDropdown'
 import { useAppContext } from '@/contexts/AppContext'
 
@@ -150,6 +151,9 @@ export default function Home() {
               orders={table.getFilteredRowModel().rows.map(row => row.original)} 
               onDepartmentClick={handleDepartmentClick}
               dateRange={dateRange}
+            />
+            <OrdersTimePileChart 
+              orders={table.getFilteredRowModel().rows.map(row => row.original)} 
             />
           </div>
         )}
