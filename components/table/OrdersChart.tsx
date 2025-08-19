@@ -14,22 +14,7 @@ import {
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 import type { Order } from '@/types/database'
 import { parseProcessingTime, DateRange } from '@/lib/timeUtils'
-
-interface OrdersChartProps {
-  orders: Order[]
-  onDepartmentClick?: (department: string) => void
-  dateRange?: DateRange
-}
-
-interface ChartData {
-  department: string
-  'До 10 мин': number
-  '10-20 мин': number
-  '20-30 мин': number
-  'Более 30 мин': number
-  total: number
-  cancelled: number
-}
+import { OrdersChartProps, ChartData } from '@/types/table'
 
 export function OrdersChart({ orders, onDepartmentClick, dateRange }: OrdersChartProps) {
   const [isExpanded, setIsExpanded] = useState(true)

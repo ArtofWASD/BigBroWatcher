@@ -1,11 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-
-interface StatusDropdownProps {
-  currentStatus: string[] | null
-  allStatuses?: string[]
-}
+import { StatusDropdownProps } from '@/types/table'
 
 // Простая SVG иконка стрелки вниз
 const ChevronDownIcon = ({ className }: { className?: string }) => (

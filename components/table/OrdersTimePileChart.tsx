@@ -10,25 +10,8 @@ import {
   Legend
 } from 'recharts'
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
-import type { Order } from '@/types/database'
 import { parseProcessingTime } from '@/lib/timeUtils'
-
-interface PieChartData {
-  name: string
-  value: number
-  color: string
-}
-
-interface PieChartComponentProps {
-  orders: Order[]
-}
-
-interface CustomTooltipProps {
-  active?: boolean
-  payload?: {
-    payload: PieChartData
-  }[]
-}
+import { PieChartData, PieChartComponentProps, CustomTooltipProps } from '@/types/table'
 
 const COLORS = ['#10b981', '#f59e0b', '#f97316', '#ef4444']
 
