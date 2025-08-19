@@ -25,7 +25,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined)
 export function AppProvider({ children }: { children: ReactNode }) {
   const [highlightEnabled, setHighlightEnabled] = useState(false)
   const [dateRange, setDateRange] = useState<DateRange>({ startDate: null, endDate: null })
-  const [showAnalytics, setShowAnalytics] = useState(false)
+  const [showAnalytics, setShowAnalytics] = useState(true)
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)

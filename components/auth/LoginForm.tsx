@@ -2,11 +2,7 @@
 
 import { useForm } from 'react-hook-form'
 import { login } from '@/app/login/actions'
-
-type LoginFormInputs = {
-  email: string
-  password: string
-}
+import { LoginFormInputs } from '@/types/auth'
 
 export default function LoginForm() {
   const {

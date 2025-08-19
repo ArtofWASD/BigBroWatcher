@@ -2,13 +2,7 @@
 
 import { useForm } from 'react-hook-form'
 import { register } from '@/app/register/actions'
-
-type RegisterFormInputs = {
-  email: string
-  name: string
-  password: string
-  confirmPassword: string
-}
+import { RegisterFormInputs } from '@/types/auth'
 
 export default function RegisterForm() {
   const {

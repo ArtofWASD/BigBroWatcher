@@ -19,16 +19,17 @@ import {
 import { useOrders } from '@/hooks/useOrders'
 import { useOrderTable } from '@/hooks/useOrderTable'
 import { getRowColor } from '@/lib/timeUtils'
-import { DraggableColumnHeader } from '@/components/DraggableColumnHeader'
-import { HighlightToggle } from '@/components/HighlightToggle'
-import { DateFilter } from '@/components/DateFilter'
-import { AnalyticsToggle } from '@/components/AnalyticsToggle'
-import { TablePagination } from '@/components/TablePagination'
+import { DraggableColumnHeader } from '@/components/table/DraggableColumnHeader'
+import { HighlightToggle } from '@/components/controls/HighlightToggle'
+import { DateFilter } from '@/components/controls/DateFilter'
+import { AnalyticsToggle } from '@/components/controls/AnalyticsToggle'
+import { TablePagination } from '@/components/table/TablePagination'
 import { LoadingState } from '@/components/LoadingState'
 import { ErrorState } from '@/components/ErrorState'
 import { Instructions } from '@/components/Instructions'
-import { OrdersChart } from '@/components/OrdersChart'
-import { StatusDropdown } from '@/components/StatusDropdown'
+import { OrdersChart } from '@/components/table/OrdersChart'
+import { OrdersTimePileChart } from '@/components/table/OrdersTimePileChart'
+import { StatusDropdown } from '@/components/table/StatusDropdown'
 import { useAppContext } from '@/contexts/AppContext'
 
 export default function Home() {
@@ -150,6 +151,9 @@ export default function Home() {
               orders={table.getFilteredRowModel().rows.map(row => row.original)} 
               onDepartmentClick={handleDepartmentClick}
               dateRange={dateRange}
+            />
+            <OrdersTimePileChart 
+              orders={table.getFilteredRowModel().rows.map(row => row.original)} 
             />
           </div>
         )}
