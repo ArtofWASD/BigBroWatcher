@@ -1,7 +1,7 @@
 import { createColumnHelper } from '@tanstack/react-table'
 import { createElement } from 'react'
 import { parseProcessingTime } from './timeUtils'
-import { StatusDropdown } from '@/components/StatusDropdown'
+import { StatusDropdown } from '@/components/table/StatusDropdown'
 import type { Order } from '@/types/database'
 
 // Создаем helper для колонок

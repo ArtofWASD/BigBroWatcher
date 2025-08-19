@@ -18,7 +18,7 @@ export function AnalyticsToggle({ showAnalytics, onToggle }: AnalyticsToggleProp
       }`}
     >
       <ChartBarIcon className="h-4 w-4 mr-2 flex-shrink-0" />
-      <span>Аналитика</span>
+      <span>{showAnalytics ? 'Скрыть аналитику' : 'Показать аналитику'}</span>
     </button>
   )
 }
