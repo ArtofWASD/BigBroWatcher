@@ -11,7 +11,7 @@ import {
 } from 'recharts'
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { parseProcessingTime } from '@/lib/timeUtils'
-import { PieChartData, PieChartComponentProps, CustomTooltipProps } from '@/types/table'
+import { PieChartData, PieChartComponentProps } from '@/types/table'
 
 const COLORS = ['#10b981', '#f59e0b', '#f97316', '#ef4444']
 
@@ -59,7 +59,7 @@ export function OrdersTimePileChart({ orders }: PieChartComponentProps) {
   }, [orders])
 
   // Кастомный тултип
-  const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payload: PieChartData }[] }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (

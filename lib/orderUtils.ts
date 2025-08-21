@@ -64,5 +64,6 @@ export function validateOrderData(order: Partial<Order> & { id?: unknown }): Ord
     order_status: order.order_status ?? null,
     current_order_status: statusArray,
     all_statuses: allStatuses,
+    order_amount: order.order_amount ?? null,
   }
 }
