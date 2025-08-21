@@ -1,11 +1,6 @@
 'use client'
 
-import type { Table } from '@tanstack/react-table'
-import type { Order } from '@/types/database'
-
-interface TablePaginationProps {
-  table: Table<Order>
-}
+import { TablePaginationProps } from '@/types/table'
 
 export function TablePagination({ table }: TablePaginationProps) {
   return (

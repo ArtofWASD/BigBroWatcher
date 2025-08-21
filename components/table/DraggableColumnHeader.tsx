@@ -3,12 +3,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { flexRender } from '@tanstack/react-table'
-import type { Header } from '@tanstack/react-table'
-import type { Order } from '@/types/database'
-
-interface DraggableColumnHeaderProps {
-  header: Header<Order, unknown>
-}
+import { DraggableColumnHeaderProps } from '@/types/table'
 
 export function DraggableColumnHeader({ header }: DraggableColumnHeaderProps) {
   const {

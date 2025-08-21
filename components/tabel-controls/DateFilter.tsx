@@ -2,16 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { CalendarIcon, XMarkIcon } from '@heroicons/react/24/outline'
-
-export interface DateRange {
-  startDate: string | null
-  endDate: string | null
-}
-
-interface DateFilterProps {
-  onDateRangeChange: (dateRange: DateRange) => void
-  dateRange: DateRange
-}
+import { DateFilterProps } from '@/types/table-controls'
 
 export function DateFilter({ onDateRangeChange, dateRange }: DateFilterProps) {
   const [isOpen, setIsOpen] = useState(false)

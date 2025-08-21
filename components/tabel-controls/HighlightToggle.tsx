@@ -1,11 +1,7 @@
 'use client'
 
 import { useAppContext } from '@/contexts/AppContext'
-
-interface HighlightToggleProps {
-  highlightEnabled: boolean
-  onHighlightToggle: (enabled: boolean) => void
-}
+import { HighlightToggleProps } from '@/types/table-controls'
 
 export function HighlightToggle({ 
   highlightEnabled, 

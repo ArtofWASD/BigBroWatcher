@@ -14,22 +14,7 @@ import {
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 import type { Order } from '@/types/database'
 import { parseProcessingTime, DateRange } from '@/lib/timeUtils'
-
-interface OrdersChartProps {
-  orders: Order[]
-  onDepartmentClick?: (department: string) => void
-  dateRange?: DateRange
-}
-
-interface ChartData {
-  department: string
-  'До 10 мин': number
-  '10-20 мин': number
-  '20-30 мин': number
-  'Более 30 мин': number
-  total: number
-  cancelled: number
-}
+import { OrdersChartProps, ChartData } from '@/types/table'
 
 export function OrdersChart({ orders, onDepartmentClick, dateRange }: OrdersChartProps) {
   const [isExpanded, setIsExpanded] = useState(true)
@@ -121,6 +106,42 @@ export function OrdersChart({ orders, onDepartmentClick, dateRange }: OrdersChar
 
     // Сортируем по общему количеству заказов (по убыванию)
     return data.sort((a, b) => b.total - a.total)
+  }, [orders])
+
+  // Расчет сумм выполненных и отмененных заказов
+  const orderAmounts = useMemo(() => {
+    let completedAmount = 0
+    let cancelledAmount = 0
+    
+    orders.forEach(order => {
+      // Проверяем, что order_amount не null
+      if (order.order_amount !== null) {
+        // Проверяем статус заказа (предполагаем, что статусы могут быть в массиве current_order_status)
+        const statuses = order.current_order_status || []
+        
+        // Проверяем, есть ли статус, указывающий на выполнение или отмену
+        // Для выполненных заказов проверяем статусы, содержащие "Выполнен" (игнорируем регистр)
+        const isCompleted = statuses.some(status => 
+          status && status.toLowerCase().includes('выполнен')
+        )
+        
+        // Для отмененных заказов проверяем статусы, содержащие "Отменен" (игнорируем регистр)
+        const isCancelled = statuses.some(status => 
+          status && status.toLowerCase().includes('отменен')
+        )
+        
+        if (isCompleted) {
+          completedAmount += order.order_amount
+        } else if (isCancelled) {
+          cancelledAmount += order.order_amount
+        }
+      }
+    })
+    
+    return {
+      completedAmount,
+      cancelledAmount
+    }
   }, [orders])
 
   interface TooltipPayload {
@@ -309,6 +330,8 @@ export function OrdersChart({ orders, onDepartmentClick, dateRange }: OrdersChar
               <p><span className='font-bold'>Возрождение:</span> {vozrozhdenieTotalOrders} заказов</p>
               <p><span className='font-bold'>Магазины</span>: {otherDepartmentsTotalOrders} заказов</p>
               <p><span className='font-bold'>Отменено</span>: {cancelledOrdersCount} заказов</p>
+              <p><span className='font-bold'>Сумма выполненных</span>: {orderAmounts.completedAmount.toFixed(2)} ₽</p>
+              <p><span className='font-bold'>Сумма отмененных</span>: {orderAmounts.cancelledAmount.toFixed(2)} ₽</p>
             </div>
             <p className="mt-1">График показывает распределение заказов по подразделениям с разбивкой по времени обработки.</p>
             <p>Подразделения отсортированы по общему количеству заказов.</p>

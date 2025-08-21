@@ -1,11 +1,7 @@
 'use client'
 
 import { ChartBarIcon } from '@heroicons/react/24/outline'
-
-interface AnalyticsToggleProps {
-  showAnalytics: boolean
-  onToggle: () => void
-}
+import { AnalyticsToggleProps } from '@/types/table-controls'
 
 export function AnalyticsToggle({ showAnalytics, onToggle }: AnalyticsToggleProps) {
   return (
