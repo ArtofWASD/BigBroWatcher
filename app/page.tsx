@@ -154,6 +154,7 @@ export default function Home() {
             />
             <OrdersTimePileChart 
               orders={table.getFilteredRowModel().rows.map(row => row.original)} 
+              dateRange={dateRange}
             />
           </div>
         )}

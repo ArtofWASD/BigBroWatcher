@@ -10,17 +10,44 @@ import {
   Legend
 } from 'recharts'
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
-import { parseProcessingTime } from '@/lib/timeUtils'
+import { parseProcessingTime, DateRange } from '@/lib/timeUtils'
 import { PieChartData, PieChartComponentProps } from '@/types/table'
+import type { Order } from '@/types/database'
 
 const COLORS = ['#10b981', '#f59e0b', '#f97316', '#ef4444']
 
-export function OrdersTimePileChart({ orders }: PieChartComponentProps) {
+export function OrdersTimePileChart({ orders, dateRange }: PieChartComponentProps) {
   const [isExpanded, setIsExpanded] = useState(true)
   
   // Функция для переключения состояния
   const toggleExpand = () => {
     setIsExpanded(!isExpanded)
+  }
+  
+  // Функция для форматирования диапазона дат
+  const formatDateRange = (dateRange?: DateRange): string => {
+    if (!dateRange || (!dateRange.startDate && !dateRange.endDate)) {
+      return 'за всё время'
+    }
+    
+    const formatDate = (dateString: string) => {
+      const date = new Date(dateString)
+      return date.toLocaleDateString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      })
+    }
+    
+    if (dateRange.startDate && dateRange.endDate) {
+      return `с ${formatDate(dateRange.startDate)} по ${formatDate(dateRange.endDate)}`
+    } else if (dateRange.startDate) {
+      return `с ${formatDate(dateRange.startDate)}`
+    } else if (dateRange.endDate) {
+      return `по ${formatDate(dateRange.endDate)}`
+    }
+    
+    return 'за всё время'
   }
   
   const pieData = useMemo(() => {
@@ -112,7 +139,7 @@ export function OrdersTimePileChart({ orders }: PieChartComponentProps) {
       <div className="bg-white rounded-lg shadow p-6 mt-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-900">
-            Распределение заказов по времени обработки
+            Распределение заказов по времени обработки {formatDateRange(dateRange)}
           </h2>
           <button
             onClick={toggleExpand}
@@ -140,7 +167,7 @@ export function OrdersTimePileChart({ orders }: PieChartComponentProps) {
     <div className="bg-white rounded-lg shadow p-6 mt-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-900">
-          Распределение заказов по времени обработки
+          Распределение заказов по времени обработки {formatDateRange(dateRange)}
         </h2>
         <button
           onClick={toggleExpand}

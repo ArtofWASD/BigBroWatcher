@@ -8,6 +8,61 @@ export function DateFilter({ onDateRangeChange, dateRange }: DateFilterProps) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
+  // Функция для получения дат для быстрого выбора
+  const getQuickRange = (rangeType: 'week' | 'month' | 'quarter') => {
+    const now = new Date()
+    let startDate: Date
+    let endDate: Date
+
+    switch (rangeType) {
+      case 'week':
+        // Текущая неделя (понедельник до воскресенья)
+        const dayOfWeek = now.getDay() // Воскресенье = 0, Понедельник = 1, ..., Суббота = 6
+        // Рассчитываем понедельник текущей недели
+        // Чтобы получить понедельник, нужно отнять (dayOfWeek - 1) дней
+        // Но если сегодня воскресенье (dayOfWeek = 0), то нужно отнять 6 дней
+        const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - daysToSubtract)
+        // Рассчитываем воскресенье текущей недели (6 дней после понедельника)
+        endDate = new Date(startDate)
+        endDate.setDate(startDate.getDate() + 6)
+        break
+      case 'month':
+        // Текущий месяц
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+        break
+      case 'quarter':
+        // Последний квартал (текущий квартал)
+        const currentMonth = now.getMonth()
+        const quarterStartMonth = Math.floor(currentMonth / 3) * 3
+        startDate = new Date(now.getFullYear(), quarterStartMonth, 1)
+        endDate = new Date(now.getFullYear(), quarterStartMonth + 3, 0)
+        break
+      default:
+        return { startDate: null, endDate: null }
+    }
+
+    // Преобразуем даты в строки
+    const startDateStr = startDate.toISOString().split('T')[0]
+    const endDateStr = endDate.toISOString().split('T')[0]
+    
+    // Убедимся, что startDate не больше endDate
+    if (new Date(startDateStr) > new Date(endDateStr)) {
+      // Если есть ошибка в расчетах, меняем местами
+      return {
+        startDate: endDateStr,
+        endDate: startDateStr
+      }
+    }
+
+    return {
+      startDate: startDateStr,
+      endDate: endDateStr
+    }
+  }
+
   const handleStartDateChange = useCallback((date: string) => {
     onDateRangeChange({
       ...dateRange,
@@ -21,6 +76,13 @@ export function DateFilter({ onDateRangeChange, dateRange }: DateFilterProps) {
       endDate: date || null
     })
   }, [dateRange, onDateRangeChange])
+
+  // Обработчики для быстрого выбора диапазонов
+  const handleQuickSelect = useCallback((rangeType: 'week' | 'month' | 'quarter') => {
+    const range = getQuickRange(rangeType)
+    onDateRangeChange(range)
+    setIsOpen(false)
+  }, [onDateRangeChange])
 
   const clearDateRange = useCallback(() => {
     onDateRangeChange({
@@ -101,6 +163,31 @@ export function DateFilter({ onDateRangeChange, dateRange }: DateFilterProps) {
 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-50 overflow-hidden">
+          {/* Кнопки быстрого выбора */}
+          <div className="p-3 border-b border-gray-100">
+            <div className="text-xs font-medium text-gray-500 mb-2">Быстрый выбор:</div>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                onClick={() => handleQuickSelect('week')}
+                className="px-2 py-1 text-xs rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+              >
+                Неделя
+              </button>
+              <button
+                onClick={() => handleQuickSelect('month')}
+                className="px-2 py-1 text-xs rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+              >
+                Месяц
+              </button>
+              <button
+                onClick={() => handleQuickSelect('quarter')}
+                className="px-2 py-1 text-xs rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+              >
+                Квартал
+              </button>
+            </div>
+          </div>
+          
           <div className="p-4">
             <div className="grid grid-cols-2 gap-3">
               <div>

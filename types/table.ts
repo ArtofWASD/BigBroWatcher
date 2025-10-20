@@ -31,6 +31,7 @@ export interface PieChartData {
 
 export interface PieChartComponentProps {
   orders: Order[]
+  dateRange?: DateRange
 }
 
 export interface CustomTooltipProps {
